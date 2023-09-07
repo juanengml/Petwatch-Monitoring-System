@@ -1,5 +1,0 @@
-opencv-python
-flask
-dlib
-shortuuid
-requests

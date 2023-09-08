@@ -1,5 +1,7 @@
 opencv-python
 flask
-dlib
 shortuuid
 requests
+pendulum
+boto3
+dataset

@@ -10,6 +10,7 @@ RUN apt-get install libgl1-mesa-glx -y
 # Copie os arquivos do diretório local para o diretório de trabalho no container
 COPY . /app
 
+
 # Instale as dependências da sua API Flask
 RUN pip install -r requirements.txt
 

@@ -125,6 +125,18 @@ def atualizar_gato(nome):
     db.query(query)
     return jsonify({'message': 'Gato atualizado com sucesso'}), 200
 
+@app.route('/gatos/<string:nome>', methods=['DELETE'])
+def deletar(nome):
+    result = db.search(f"SELECT * FROM table_cats_information WHERE nome='{nome}'")
+    if len(result) > 0:
+        bucket = result[0]['bucket']
+        s3_storage.delete_bucket(bucket)
+        db.delete('table_cats_information', nome)
+        return jsonify({"message": "Gato deletado"}), 200
+
+    return jsonify({"message": "Gato não encontrado"}), 200
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

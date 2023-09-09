@@ -37,5 +37,19 @@ def update():
     print(response.status_code)
     print(response.json())
 
+def deleter():
+    url = 'http://localhost:5000/gatos/Lora'
+
+    response = delete(url)
+
+    print(response.status_code)
+    print(response.json())
+
+cadastra()
+
 update()
+status()
+
+deleter()    
+
 status()

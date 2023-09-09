@@ -1,4 +1,7 @@
 import boto3
+from PIL import Image
+from io import BytesIO
+import json
 
 class Storage(object):
     def __init__(self, 
@@ -20,6 +23,20 @@ class Storage(object):
         existing_buckets = [b['Name'] for b in self.s3.list_buckets()['Buckets']]
         if bucket not in existing_buckets:
             self.s3.create_bucket(Bucket=bucket)
+            bucket_policy = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "Action": "s3:GetObject",
+                        "Resource": f"arn:aws:s3:::{bucket}/*"
+                    }
+                ]
+            }
+
+            bucket_policy_json = json.dumps(bucket_policy)
+            self.s3.put_bucket_policy(Bucket=bucket, Policy=bucket_policy_json)
 
     def upload(self, bucket, file_local, file_target):
         # Verificar se o bucket existe e, se não existir, criar
@@ -43,6 +60,24 @@ class Storage(object):
 
         # Agora que todos os objetos foram excluídos, você pode excluir o bucket
         self.s3.delete_bucket(Bucket=bucket)
+
+    def get_image_bucket(self, bucket, image_path):
+        try:
+            # Verifique se o bucket existe
+            existing_buckets = [b['Name'] for b in self.s3.list_buckets()['Buckets']]
+            if bucket not in existing_buckets:
+                return None, "Bucket não encontrado"
+
+            # Obtenha a imagem do S3
+            response = self.s3.get_object(Bucket=bucket, Key=image_path)
+            image_data = response['Body'].read()
+            print(response['Body'])
+
+            # Carregue a imagem usando o Pillow (PIL)
+            image = Image.open(BytesIO(image_data))
+            return image, "Sucesso"
+        except Exception as e:
+            return None, str(e)        
 
 # Exemplo de uso:
 if __name__ == "__main__":

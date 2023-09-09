@@ -18,7 +18,7 @@ class Collections(object):
             if not nome or not data_nascimento or not video_file or not image_file:
                 st.error("Por favor, preencha todos os campos e selecione os arquivos.")
             else:
-                url = 'http://localhost:5000/gatos'
+                url = 'http://localhost:5001/gatos'
                 files = {'video': video_file, 'image': image_file}
                 data = {'nome': nome, 'data_nascimento': data_nascimento}
 
@@ -31,13 +31,39 @@ class Collections(object):
 
     @staticmethod
     def status():
-        st.subheader("Status dos Gatos")
+        css_style = f"""
+<style>
+    /* Seu CSS personalizado aqui */
+    .rounded-image img {{
+        border-radius: 50%;
+        /* Outros estilos que você deseja aplicar à imagem */
+    }}
+</style>
+"""
+        st.title("Status dos Gatos")
         try:
-            url = 'http://localhost:5000/gatos'
+            url = 'http://localhost:5001/gatos'
             response = get(url).json()
-
             if response:
-                st.write(response)
+                #st.write(response)
+                count = 0
+                for col_aux in st.columns(len(response)):
+                    col_aux.subheader(response[count]['nome'])
+                    image = response[count]['image']
+                    bucket = response[count]['bucket']
+                    link = f"http://localhost:9000/{bucket}/{image}"
+                    col_aux.markdown(f'{css_style}<div class="rounded-image"><img src="{link}" /></div>', unsafe_allow_html=True)
+
+
+                    col_aux.metric("Data Nascimento", value=response[count]['data_nascimento'])
+                    col_aux.info(f"bucket - {bucket}")
+                    
+                    #st.metric(label="Total Error", value=response['error_count']['count'])
+
+
+                    count = count + 1
+                st.subheader("Registros")
+                st.table(response)
             else:
                 st.info("Nenhum gato encontrado.")
         except requests.exceptions.ConnectionError as error:
@@ -54,7 +80,7 @@ class Collections(object):
             if not nome or (not data_nascimento and not image_file):
                 st.error("Por favor, preencha o nome do gato e pelo menos um dos campos para atualização.")
             else:
-                url = f'http://localhost:5000/gatos/{nome}'
+                url = f'http://localhost:5001/gatos/{nome}'
                 files = {'image': image_file} if image_file else None
                 data = {'nome': nome, 'data_nascimento': data_nascimento} if data_nascimento else {'nome': nome}
 
@@ -74,7 +100,7 @@ class Collections(object):
             if not nome:
                 st.error("Por favor, preencha o nome do gato para exclusão.")
             else:
-                url = f'http://localhost:5000/gatos/{nome}'
+                url = f'http://localhost:5001/gatos/{nome}'
                 response = delete(url)
 
                 if response.status_code == 200:
@@ -86,11 +112,11 @@ class Collections(object):
 class CollectionSelector(object):
     @staticmethod
     def seletor():
-        st.sidebar.markdown("![Alt Text](https://raw.githubusercontent.com/juanengml/Petwatch-Monitoring-System/main/petwatch-face-ui/ezgif-1-c06d2fccba.gif)")
+        st.sidebar.markdown("![Alt Text](https://raw.githubusercontent.com/juanengml/Petwatch-Monitoring-System/main/petwatch-face-ui/src/ezgif-1-c06d2fccba.gif)")
 
     # Menu de opções
-        menu = option_menu(None, ["Cadastrar", "Status", "Deletar", 'Atualizar'],
-                        icons=['Cadastrar', 'Status', "Deletar", 'Atualizar'],
+        menu = option_menu(None, ["Status", "Cadastrar", "Deletar", 'Atualizar'],
+                        icons=['Status', 'Cadastrar', "Deletar", 'Atualizar'],
                         menu_icon="cast", default_index=0, orientation="horizontal")
 
         if menu == "Cadastrar":

@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
+
 import os
 import shortuuid
 from lmodel.database import DataBase
 from lmodel.storage import Storage
 import pendulum
-
+from lmodel.vision import resize_image
 
 # Diretório para armazenar as imagens dos gatos
 image_directory = 'imagens_gatos'
@@ -67,8 +68,13 @@ def cadastrar_gato():
     image.save(image_local)
     bucket = f"{nome.lower()}-{str(shortuuid.uuid()).lower()}"
 
+    output_path = resize_image(image_local, image_local,(320,240))
+    
     s3_storage.upload(bucket, video_local, target_video)
-    s3_storage.upload(bucket, image_local, target_image)
+    s3_storage.upload(bucket, output_path, target_image)
+
+    os.remove(video_local)
+
 
     # Agora você pode realizar as operações necessárias com os dados do gato e o caminho do vídeo
     db = DataBase()
@@ -105,10 +111,12 @@ def atualizar_gato(nome):
         image_local = f'uploads/images/{nome}_{image.filename}'
         target_image = f"{nome.lower()}/{image.filename}"
         image.save(image_local)
-
+        output_path = resize_image(image_local, image_local,(320,240))
         # Salve a imagem no MinIO
         result = db.search(f"SELECT * FROM table_cats_information WHERE nome='{nome}'")[0]
-        s3_storage.upload(result['bucket'], image_local, target_image)
+        s3_storage.upload(result['bucket'], output_path, target_image)
+
+        
 
     query = f"UPDATE table_cats_information SET"
     if novo_nome:
@@ -137,6 +145,17 @@ def deletar(nome):
     return jsonify({"message": "Gato não encontrado"}), 200
 
 
+@app.route('/get_image/<bucket>/<path:image_path>')
+def get_image(bucket, image_path):
+    # Use a função get_image_bucket para obter a imagem
+    image, status = s3_storage.get_image_bucket(bucket, image_path)
+
+    # Verifique se a imagem foi obtida com sucesso
+    if image is not None:
+        # Use send_file para enviar a imagem como resposta
+        return send_file(image, mimetype='image/jpeg')
+    else:
+        return f"Erro: {status}", 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001, debug=True)

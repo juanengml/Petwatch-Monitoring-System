@@ -9,14 +9,22 @@ st.set_page_config(layout='wide')
 
 st.title('🐱 Petwatch Face Recognize 🐱')
 st.sidebar.title('Gestão de Pet')
-
-menu = st.sidebar.radio('Menu:',
-                 ["Dashboard",
+st.sidebar.write("---")
+menu = st.sidebar.selectbox('Menu:',
+                 (
+                  "Dashboard",
                   "Verificar",
-                  "Face Collections"]
+                  "Cat Collections", 
+                  )
                 )
-st.sidebar.image("uly_2.png")
+
+if menu == 'Cat Collections':
+    #st.sidebar.video('ja_verificou.mp4', format="video/mp4", start_time=0)
+    st.sidebar.markdown("![Alt Text](https://im.ezgif.com/tmp/ezgif-1-c06d2fccba.gif)")
+
+
 if menu == "Verificar":
+    st.sidebar.image("SamPoderoso.png")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.file_uploader('File uploader')
@@ -41,6 +49,7 @@ if menu == "Verificar":
 
 
 if menu == 'Dashboard':
+    st.sidebar.image("uly_2.png")
     col1, col2 = st.columns(2)
 
     with col1:

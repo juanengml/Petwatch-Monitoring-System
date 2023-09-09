@@ -34,8 +34,19 @@ class Storage(object):
         for obj in response.get('Contents', []):
             print(obj['Key'])
 
+    def delete_bucket(self, bucket):
+        # Listar objetos no bucket e excluí-los
+        response = self.s3.list_objects(Bucket=bucket)
+        for obj in response.get('Contents', []):
+            object_key = obj['Key']
+            self.s3.delete_object(Bucket=bucket, Key=object_key)
+
+        # Agora que todos os objetos foram excluídos, você pode excluir o bucket
+        self.s3.delete_bucket(Bucket=bucket)
+
 # Exemplo de uso:
 if __name__ == "__main__":
     s3_storage = Storage(uri='http://localhost:9000', access_key='minio_access_key', secret_key='minio_secret_key')
     s3_storage.upload('mybucket', 'local_file.txt', 'remote_file.txt')
     s3_storage.list_objects('mybucket')
+    s3_storage.delete_bucket('mybucket')

@@ -6,7 +6,10 @@ class DataBase(object):
         self.db = dataset.connect(self.uri)
 
     def search(self, query):
-        return [row for row in self.db.query(query)]
+        try:
+           return [dict(row) for row in self.db.query(query)]
+        except: 
+           return []
 
     def insert(self, table_name, data):
         table = self.db[table_name]
@@ -19,11 +22,9 @@ class DataBase(object):
         table = self.db[table_name]
         table.update(data, **query)
 
-    def delete(self, table_name, query):
+    def delete(self, table_name, nome):
         table = self.db[table_name]
-        table.delete(**query)
+        table.delete(nome=nome)
 
-    def query(self, table_name, query_str):
-        table = self.db[table_name]
-        result = table.database.query(query_str)
-        return result
+    def query(self, query):
+        self.db.query(query)

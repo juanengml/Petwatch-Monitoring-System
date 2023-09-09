@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import folium as f
-
+from cat_collector import *
+from streamlit_option_menu import option_menu
 
 st.set_page_config(layout='wide')
 
@@ -20,8 +21,22 @@ menu = st.sidebar.selectbox('Menu:',
 
 if menu == 'Cat Collections':
     #st.sidebar.video('ja_verificou.mp4', format="video/mp4", start_time=0)
-    st.sidebar.markdown("![Alt Text](https://im.ezgif.com/tmp/ezgif-1-c06d2fccba.gif)")
+    st.sidebar.markdown("![Alt Text](https://raw.githubusercontent.com/juanengml/Petwatch-Monitoring-System/main/petwatch-face-ui/ezgif-1-c06d2fccba.gif)")
+    
+    menu = option_menu(None, ["Cadastrar", "Status", "Deletar", 'Atualizar'], 
+    icons=['Cadastrar', 'Status', "Deletar", 'Atualizar'], 
+    menu_icon="cast", default_index=0, orientation="horizontal")
 
+    
+
+    if menu == "Cadastrar":
+        cadastra()
+    elif menu == "Status":
+        status()
+    elif menu == "Atualizar":
+        update()
+    elif menu == "Deletar":
+        deleter()
 
 if menu == "Verificar":
     st.sidebar.image("SamPoderoso.png")
@@ -33,7 +48,7 @@ if menu == "Verificar":
 
 
         if st.button('Verificar'):
-           st.table({"Nome": "Uly", "Idade": "4 anos", "Tutores": "Juan e Debora", "Localidade": "Campinas SP", "CEP": "123456678", 'Contato':"+55 41 992149181"})
+           st.table({"Nome": "Uly", "Idade": "4 anos", "Tutores": "Debora Rodrigues e Juan Manoel", "Localidade": "Campinas SP", "CEP": "123456678", 'Contato':"+55 41 992149181"})
            with col2: 
               st.image("saida.jpg")
            with col3: 

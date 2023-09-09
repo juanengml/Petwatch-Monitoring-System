@@ -1,12 +1,15 @@
 import dataset
 
 class DataBase(object):
-    def __init__(self, uri='sqlite:///petwatch.db'):
+    def __init__(self, uri='sqlite:///petwatch-ai-infenrece.db'):
         self.uri = uri
         self.db = dataset.connect(self.uri)
 
     def search(self, query):
-        return [row for row in self.db.query(query)]
+        try:
+            return [row for row in self.db.query(query)]
+        except:
+            return []
 
     def insert(self, table_name, data):
         table = self.db[table_name]

@@ -5,7 +5,6 @@ from lmodel.database import DataBase
 from lmodel.storage import Storage
 import pendulum
 
-now = pendulum.now("America/Sao_Paulo")
 
 # Diretório para armazenar as imagens dos gatos
 image_directory = 'imagens_gatos'
@@ -73,7 +72,8 @@ def cadastrar_gato():
 
     # Agora você pode realizar as operações necessárias com os dados do gato e o caminho do vídeo
     db = DataBase()
-    
+    now = pendulum.now("America/Sao_Paulo")
+
     gato = {
         'nome': nome,
         'data_nascimento': data_nascimento,
@@ -139,4 +139,4 @@ def deletar(nome):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)

@@ -7,30 +7,43 @@
 from requests import get,post, put, delete
 
 def cadastra():
-    url = 'http://localhost:5000/gatos'
+    url = 'http://localhost:5001/gatos'
     files = {
         'video': open('/home/juannascimento/Documentos/Lora.mp4', 'rb'),
         'image': open('/home/juannascimento/Documentos/dataset/lora/cat_964.jpg', 'rb')
     }
-    data = {'nome': 'Lora', 'data_nascimento': '01/01/2019'}
+    data = {'nome': 'Lora', 'data_nascimento': '01/06/2019'}
 
     response = post(url, files=files, data=data)
 
     print(response.status_code)
     print(response.json())
 
+    url = 'http://localhost:5001/gatos'
+    files = {
+        'video': open('/home/juannascimento/Documentos/Uly.mp4', 'rb'),
+        'image': open('/home/juannascimento/Documentos/dataset/uly/cat_225.jpg', 'rb')
+    }
+    data = {'nome': 'Uly', 'data_nascimento': '01/11/2019'}
+
+    response = post(url, files=files, data=data)
+
+    print(response.status_code)
+    print(response.json())
+
+
 def status():
-    url = 'http://localhost:5000/gatos'
+    url = 'http://localhost:5001/gatos'
   
     response = get(url).json()
     print(response)
 
 def update():
-    url = 'http://localhost:5000/gatos/Lora'
+    url = 'http://localhost:5001/gatos/Lora'
     files = {
         'image': open('/home/juannascimento/Documentos/dataset/lora/cat_818.jpg', 'rb')
     }
-    data = {'nome': 'Lora', 'data_nascimento': '01/02/2019'}
+    data = {'nome': 'Lora', 'data_nascimento': '01/01/2019'}
 
     response = put(url, files=files, data=data)
 
@@ -38,18 +51,20 @@ def update():
     print(response.json())
 
 def deleter():
-    url = 'http://localhost:5000/gatos/Lora'
+    lista_nomes = ['Lora', 'Uly']
+    for name in lista_nomes:
+        url = f'http://localhost:5001/gatos/{name}'
 
-    response = delete(url)
+        response = delete(url)
 
-    print(response.status_code)
-    print(response.json())
+        print(response.status_code)
+        print(response.json())
 
 cadastra()
 
 update()
 status()
 
-deleter()    
+#deleter()    
 
-status()
+# status()

@@ -1,13 +1,11 @@
 from flask import Flask, request, jsonify
 import os
-import shortuuid
 from lmodel.vision import salvar_imagem_base64
 from lmodel.vision import inference_yolo, inferencia_cnn
 from lmodel.database import DataBase
 from lmodel.logger_status import logger_table
 import pendulum
 
-now = pendulum.now("America/Sao_Paulo")
 # Diretório para armazenar as imagens dos gatos
 image_directory = 'imagens_gatos'
 import cv2
@@ -17,12 +15,11 @@ if not os.path.exists(image_directory):
 
 app = Flask(__name__)
 
-# Lista de gatos (simulando um banco de dados)
-gatos = []
 
 # Rota para verificar os dados do gato
 @app.route('/inferencia', methods=['POST'])
 def verificar_gato():
+    now = pendulum.now("America/Sao_Paulo")
     db = DataBase()
     data = request.get_json()
     imagem_base64 = data['imagem_base64']
@@ -51,15 +48,15 @@ def verificar_gato():
         db.insert('request_log', logger_table)
         return jsonify({'message': 'Gato não encontrado'}), 404
 
-@app.route('/status', methods=['GET'])
+@app.route('/inferencia/status', methods=['GET'])
 def status_model():
     db = DataBase()
     # Consulta para buscar os últimos 10 registros com sucesso
-    query = 'SELECT * FROM request_log WHERE status = "sucesso" ORDER BY id DESC LIMIT 10'
+    query = 'SELECT * FROM request_log WHERE status = "sucesso" ORDER BY id DESC LIMIT 500'
     success_logs = db.search(query)
 
     # Consulta para buscar os últimos 10 registros com erro
-    query = 'SELECT * FROM request_log WHERE status = "erro" ORDER BY id DESC LIMIT 10'
+    query = 'SELECT * FROM request_log WHERE status = "erro" ORDER BY id DESC LIMIT 500'
     error_logs = db.search(query)
     # Consultar e contar solicitações bem-sucedidas
     success_count = db.search('SELECT COUNT(*) as count FROM request_log WHERE status = "sucesso"')
@@ -67,16 +64,20 @@ def status_model():
     # Consultar e contar solicitações com erro
     error_count = db.search('SELECT COUNT(*) as count FROM request_log WHERE status = "erro"')
     
+    model_files = [file for file in os.listdir("lmodel") if file.endswith(".h5")]
+
     # Montar um dicionário com as estatísticas
     statistics = {
-        'success_count': success_count[0],
+        'success_count': success_count[0] if len(success_count) > 0 else success_count,
         'success_logs': [dict(success) for success in success_logs],
-        'error_count': error_count[0],
+        'error_count': error_count[0] if len(error_count) > 0 else error_count,
         'error_logs': [dict(error) for error in error_logs],
+        "model": model_files
     }
     
     # Retornar as estatísticas como uma resposta JSON
     return jsonify(statistics)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -26,6 +26,7 @@ def verificar_gato():
     foto_filename = cv2.imread(salvar_imagem_base64(imagem_base64, "target"))
 
     result_inference = inference_yolo(foto_filename) 
+
     
     if result_inference != None:
         label = inferencia_cnn(result_inference)
@@ -35,7 +36,8 @@ def verificar_gato():
         db.insert('request_log', logger_table)
         return jsonify({
             'message': 'Gato encontrado', 
-            'nome': label, 
+            'nome': label['class_name'], 
+            'confidence': label['confidence'],
             'label': result_inference['label'],
             'bbox': result_inference['bbox']
         }), 200

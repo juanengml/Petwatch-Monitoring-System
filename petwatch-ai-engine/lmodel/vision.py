@@ -60,8 +60,9 @@ def inference(foto_filename):
     return bbox, landmark
 
 def inference_yolo(frame):
-    bbox, label, conf = cv.detect_common_objects(frame, confidence=0.25, model='yolov4-tiny')
+    bbox, label, conf = cv.detect_common_objects(frame, confidence=0.25, model='yolov4')
     cropped = list()
+
     for label, c in zip(label, conf):
         if label == 'cat':
             idx = label.index(label)
@@ -83,7 +84,7 @@ def inference_yolo(frame):
 def inferencia_cnn(cropped):
     image_data = cat_recognition.preprocess_image(cropped['cropped'])
     class_name, confidence_score = cat_recognition.predict(image_data)
-    return f"{class_name}-{confidence_score:.6f}".replace("\n-","-")
+    return {"class_name": class_name, "confidence": f"{confidence_score:.6f}"}
                         
 
 # Diretório para armazenar as imagens dos gatos

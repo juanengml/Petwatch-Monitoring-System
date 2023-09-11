@@ -1,17 +1,21 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from requests import get
+from requests import get, ConnectionError
 
 class Dash(object):
 
     @staticmethod
     def exibir_dashboard():
-        
-        endpoint = "http://localhost:5000/inferencia/status"
-        response = get(endpoint).json()
-
         st.sidebar.image("src/uly_2.png")
+        try:
+            endpoint = "http://localhost:5000/inferencia/status"
+            response = get(endpoint).json()
+        except ConnectionError as error:
+            st.warning("STATUS: petwatch-api-backend OFFLINE ", icon='🛑')
+            st.error(error)
+            return
+
         col1, col2 = st.columns(2)
 
         with col1:

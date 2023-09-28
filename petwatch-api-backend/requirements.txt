@@ -5,3 +5,5 @@ requests
 pendulum
 boto3
 dataset
+Pillow
+mysqlclient

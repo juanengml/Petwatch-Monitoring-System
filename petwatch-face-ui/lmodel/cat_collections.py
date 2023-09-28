@@ -18,7 +18,7 @@ class Collections(object):
             if not nome or not data_nascimento or not video_file or not image_file:
                 st.error("Por favor, preencha todos os campos e selecione os arquivos.")
             else:
-                url = 'http://localhost:5001/gatos'
+                url = 'http://petwatch-api-backend:5001/gatos'
                 files = {'video': video_file, 'image': image_file}
                 data = {'nome': nome, 'data_nascimento': data_nascimento}
 
@@ -42,7 +42,7 @@ class Collections(object):
 """
         st.title("Status dos Gatos")
         try:
-            url = 'http://localhost:5001/gatos'
+            url = 'http://petwatch-api-backend:5001/gatos'
             response = get(url).json()
             if response:
                 #st.write(response)
@@ -80,7 +80,7 @@ class Collections(object):
             if not nome or (not data_nascimento and not image_file):
                 st.error("Por favor, preencha o nome do gato e pelo menos um dos campos para atualização.")
             else:
-                url = f'http://localhost:5001/gatos/{nome}'
+                url = f'http://petwatch-api-backend:5001/gatos/{nome}'
                 files = {'image': image_file} if image_file else None
                 data = {'nome': nome, 'data_nascimento': data_nascimento} if data_nascimento else {'nome': nome}
 
@@ -100,7 +100,7 @@ class Collections(object):
             if not nome:
                 st.error("Por favor, preencha o nome do gato para exclusão.")
             else:
-                url = f'http://localhost:5001/gatos/{nome}'
+                url = f'http://petwatch-api-backend:5001/gatos/{nome}'
                 response = delete(url)
 
                 if response.status_code == 200:

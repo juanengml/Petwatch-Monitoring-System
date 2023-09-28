@@ -69,7 +69,7 @@ def cadastrar_gato():
     bucket = f"{nome.lower()}-{str(shortuuid.uuid()).lower()}"
 
     output_path = resize_image(image_local, image_local,(320,240))
-    
+    print(f"Bucket - {bucket}\nVideo Local - {video_local}\nTarget - {target_video}")
     s3_storage.upload(bucket, video_local, target_video)
     s3_storage.upload(bucket, output_path, target_image)
 

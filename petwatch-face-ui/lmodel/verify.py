@@ -30,7 +30,7 @@ class Verify(object):
                     data = {
                         "imagem_base64": ler_imagem_base64("src/imagem_salva.jpg")
                         }
-                    endpoint = "http://localhost:5000/inferencia"
+                    endpoint = "http://petwatch-ai-engine:5001/inferencia"
                     result = post(endpoint, json=data).json()
                     tabela = result.copy()
                     if 'bbox' in result:

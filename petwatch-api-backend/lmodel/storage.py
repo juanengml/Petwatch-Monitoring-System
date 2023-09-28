@@ -5,7 +5,7 @@ import json
 
 class Storage(object):
     def __init__(self, 
-                 uri='http://localhost:9000', 
+                 uri='http://minio:9000', 
                  access_key='minio_access_key', 
                  secret_key='minio_secret_key'):
         self.uri = uri
@@ -41,7 +41,7 @@ class Storage(object):
     def upload(self, bucket, file_local, file_target):
         # Verificar se o bucket existe e, se não existir, criar
         self.create_bucket(bucket)
-
+        print(file_local, bucket, file_target)
         # Fazer o upload do arquivo
         self.s3.upload_file(file_local, bucket, file_target)
 
@@ -81,7 +81,7 @@ class Storage(object):
 
 # Exemplo de uso:
 if __name__ == "__main__":
-    s3_storage = Storage(uri='http://localhost:9000', access_key='minio_access_key', secret_key='minio_secret_key')
+    s3_storage = Storage(uri='http://minio:9000', access_key='minio_access_key', secret_key='minio_secret_key')
     s3_storage.upload('mybucket', 'local_file.txt', 'remote_file.txt')
     s3_storage.list_objects('mybucket')
     s3_storage.delete_bucket('mybucket')

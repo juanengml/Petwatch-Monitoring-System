@@ -1,0 +1,8 @@
+requests
+streamlit
+streamlit-option-menu
+pandas
+numpy
+Pillow
+bbox-visualizer
+opencv-python

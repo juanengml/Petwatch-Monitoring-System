@@ -1,7 +1,7 @@
 import dataset
 
 class DataBase(object):
-    def __init__(self, uri='sqlite:///petwatch-ai-infenrece.db'):
+    def __init__(self, uri='mysql://root:root@172.17.0.3/petwatch'):
         self.uri = uri
         self.db = dataset.connect(self.uri)
 

@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  petwatch-api-backend:
+    build:
+      context: ./petwatch-api-backend
+    ports:
+      - "5001:5001"
+    # Outras configurações necessárias para o serviço de backend
+
+  petwatch-ai-engine:
+    build:
+      context: ./petwatch-ai-engine
+    ports:
+      - "5000:5000"
+    # Outras configurações necessárias para o serviço de IA
+
+  petwatch-face-ui:
+    build:
+      context: ./petwatch-face-ui
+    ports:
+      - "8501:8501"
+    # Outras configurações necessárias para o serviço de frontend
+    depends_on:
+      - petwatch-api-backend
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    command: server /data

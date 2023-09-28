@@ -1,5 +1,5 @@
 # Nome da imagem Docker
-DOCKER_IMAGE_NAME = api-petwatch-cat-recognize
+DOCKER_IMAGE_NAME = api-petwatch-api-backend
 
 # Porta em que a aplicação Flask irá rodar no host
 HOST_PORT = 5000

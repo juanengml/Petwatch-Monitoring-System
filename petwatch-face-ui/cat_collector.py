@@ -12,7 +12,7 @@ def cadastra():
         if not nome or not data_nascimento or not video_file or not image_file:
             st.error("Por favor, preencha todos os campos e selecione os arquivos.")
         else:
-            url = 'http://petwatch-api-backend:5000/gatos'
+            url = 'http://192.168.0.43:5000/gatos'
             files = {'video': video_file, 'image': image_file}
             data = {'nome': nome, 'data_nascimento': data_nascimento}
 
@@ -25,7 +25,7 @@ def cadastra():
 
 def status():
     st.subheader("Status dos Gatos")
-    url = 'http://petwatch-api-backend:5000/gatos'
+    url = 'http://192.168.0.43:5000/gatos'
     response = get(url).json()
     
     if response:
@@ -43,7 +43,7 @@ def update():
         if not nome or (not data_nascimento and not image_file):
             st.error("Por favor, preencha o nome do gato e pelo menos um dos campos para atualização.")
         else:
-            url = f'http://petwatch-api-backend:5000/gatos/{nome}'
+            url = f'http://192.168.0.43:5000/gatos/{nome}'
             files = {'image': image_file} if image_file else None
             data = {'nome': nome, 'data_nascimento': data_nascimento} if data_nascimento else {'nome': nome}
 
@@ -62,7 +62,7 @@ def deleter():
         if not nome:
             st.error("Por favor, preencha o nome do gato para exclusão.")
         else:
-            url = f'http://petwatch-api-backend:5000/gatos/{nome}'
+            url = f'http://192.168.0.43:5000/gatos/{nome}'
             response = delete(url)
 
             if response.status_code == 200:

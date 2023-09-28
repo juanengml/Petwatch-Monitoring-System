@@ -9,7 +9,7 @@ class Dash(object):
     def exibir_dashboard():
         st.sidebar.image("src/uly_2.png")
         try:
-            endpoint = "http://petwatch-ai-engine:5001/inferencia/status"
+            endpoint = "http://192.168.0.43:5000/inferencia/status"
             response = get(endpoint).json()
         except ConnectionError as error:
             st.warning("STATUS: petwatch-api-backend OFFLINE ", icon='🛑')
@@ -20,7 +20,7 @@ class Dash(object):
 
         with col1:
             st.subheader('Informações do Serviço')
-            url = 'http://petwatch-ai-engine:5001/gatos'
+            url = 'http://192.168.0.43:5001/gatos'
         
             response_api = get(url).json()
             df_api = pd.DataFrame.from_dict(response_api)

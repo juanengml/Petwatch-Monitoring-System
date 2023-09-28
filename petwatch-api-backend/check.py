@@ -7,7 +7,7 @@
 from requests import get,post, put, delete
 
 def cadastra():
-    url = 'http://localhost:5001/gatos'
+    url = 'http://192.168.0.43:5001/gatos'
     files = {
         'video': open('/home/juannascimento/Documentos/Lora.mp4', 'rb'),
         'image': open('/home/juannascimento/Documentos/dataset/lora/cat_964.jpg', 'rb')
@@ -19,7 +19,7 @@ def cadastra():
     print(response.status_code)
     print(response.json())
 
-    url = 'http://localhost:5001/gatos'
+    url = 'http://192.168.0.43:5001/gatos'
     files = {
         'video': open('/home/juannascimento/Documentos/Uly.mp4', 'rb'),
         'image': open('/home/juannascimento/Documentos/dataset/uly/cat_225.jpg', 'rb')
@@ -33,13 +33,13 @@ def cadastra():
 
 
 def status():
-    url = 'http://localhost:5001/gatos'
+    url = 'http://192.168.0.43:5001/gatos'
   
     response = get(url).json()
     print(response)
 
 def update():
-    url = 'http://localhost:5001/gatos/Lora'
+    url = 'http://192.168.0.43:5001/gatos/Lora'
     files = {
         'image': open('/home/juannascimento/Documentos/dataset/lora/cat_818.jpg', 'rb')
     }
@@ -53,7 +53,7 @@ def update():
 def deleter():
     lista_nomes = ['Lora', 'Uly']
     for name in lista_nomes:
-        url = f'http://localhost:5001/gatos/{name}'
+        url = f'http://192.168.0.43:5001/gatos/{name}'
 
         response = delete(url)
 
@@ -63,7 +63,7 @@ def deleter():
 def abre_imagem():
 
     # URL base para a rota de obtenção de imagem
-    base_url = 'http://localhost:5001/get_image/'
+    base_url = 'http://192.168.0.43:5001/get_image/'
 
     # Dados dos gatos
     data = [
@@ -101,5 +101,5 @@ status()
 status()
 # abre_imagem()
 
-#http://localhost:5001/get_image/lora-vrhoxvhodvbnghee57oeyz/lora/cat_818.jpg
-#http://localhost:5001/get_image/uly-f99sqagfruqxxvbrcacm2i/uly/cat_225.jpg
+#http://192.168.0.43:5001/get_image/lora-vrhoxvhodvbnghee57oeyz/lora/cat_818.jpg
+#http://192.168.0.43:5001/get_image/uly-f99sqagfruqxxvbrcacm2i/uly/cat_225.jpg

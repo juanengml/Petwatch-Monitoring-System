@@ -5,5 +5,4 @@ flask
 pendulum
 dataset
 shortuuid
-dlib
 mysqlclient

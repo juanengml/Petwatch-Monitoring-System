@@ -1,7 +1,7 @@
 import dataset
 
 class DataBase(object):
-    def __init__(self, uri='mysql://root:root@172.17.0.3/petwatch'):
+    def __init__(self, uri='mysql://root:root@192.168.0.43/petwatch'):
         self.uri = uri
         self.db = dataset.connect(self.uri)
 

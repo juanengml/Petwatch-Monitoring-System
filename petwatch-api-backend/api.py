@@ -21,7 +21,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Lista de gatos (simulando um banco de dados)
 gatos = []
 
-s3_storage = Storage(uri='http://localhost:9000', access_key='minio_access_key', secret_key='minio_secret_key')
+s3_storage = Storage(uri='http://192.168.0.43:9000', access_key='minio_access_key', secret_key='minio_secret_key')
 db = DataBase()
 
 # Rota para listar todos os gatos

@@ -5,6 +5,8 @@ from lmodel.vision import inference_yolo, inferencia_cnn
 from lmodel.database import DataBase
 from lmodel.logger_status import logger_table
 import pendulum
+from lmodel.data_engineer import ExtractorThread
+import threading
 
 # Diretório para armazenar as imagens dos gatos
 image_directory = 'imagens_gatos'
@@ -15,6 +17,11 @@ if not os.path.exists(image_directory):
 
 app = Flask(__name__)
 
+print("LOAD MODEL")
+
+foto_filename = cv2.imread("imagens_gatos/target.jpg")
+result_inference = inference_yolo(foto_filename) 
+print(result_inference)
 
 # Rota para verificar os dados do gato
 @app.route('/inferencia', methods=['POST'])
@@ -26,10 +33,11 @@ def verificar_gato():
     foto_filename = cv2.imread(salvar_imagem_base64(imagem_base64, "target"))
 
     result_inference = inference_yolo(foto_filename) 
-
+    print("yolo --> ", result_inference['label'])
     
     if result_inference != None:
         label = inferencia_cnn(result_inference)
+        print("label --> ", label['class_name'])
         logger_table['message'] = 'Gato encontrado'
         logger_table['date'] = now.to_date_string()
         logger_table['hour'] = now.to_atom_string().split("T")[1]
@@ -79,6 +87,27 @@ def status_model():
     
     # Retornar as estatísticas como uma resposta JSON
     return jsonify(statistics)
+
+
+@app.route('/start_extraction', methods=['POST'])
+def start_extraction():
+    data = request.get_json()
+    source = data.get('source')
+    label = 'cat'
+    nome_do_gato = data.get('nome_do_gato')
+    folder = data.get('folder')
+    thread = ExtractorThread(source, label, nome_do_gato, folder)
+    thread.start()
+    return jsonify({'message': 'Extração iniciada', 'thread_name': thread.getName()})
+
+@app.route('/check_status/<thread_name>', methods=['GET'])
+def check_status(thread_name):
+    thread = threading.currentThread()
+    if thread.getName() == thread_name:
+        return jsonify({'message': 'A extração está em andamento', 'status': 'running'})
+    else:
+        return jsonify({'message': 'Thread não encontrada', 'status': 'error'})
+
 
 
 if __name__ == '__main__':

@@ -1,20 +1,31 @@
 import cv2
-from components.cnn_cat_recognition import CatRecognitionModel
+
+from components.aws_cat_recognition import Rekognition
 try:
   from components.cat_frontal_face_detection import detect_cat_face
 except Exception as error:
-  print("ModuleNotFoundError: No module named 'dlib'")
+  print("[IGNORED] - ModuleNotFoundError: No module named 'dlib'")
 
 import base64
 import os
 import numpy as np
-import cvlib as cv
+
+from cvlib.object_detection import YOLO
 
 
 model_path = "lmodel/keras_model.h5"
 labels_path = "lmodel/labels.txt"
 
-cat_recognition = CatRecognitionModel(model_path, labels_path)
+weights = "lmodel/yolov4.weights"
+config = "lmodel/yolov4.cfg"
+labels = "lmodel/yolov3_classes.txt"
+# Diretório para armazenar as imagens dos gatos
+image_directory = 'imagens_gatos'
+
+#cat_recognition = CatRecognitionModel(model_path, labels_path)
+yolo = YOLO(weights, config, labels)
+rekognition = Rekognition()
+
 
 def montar_dict_landmarks(landmarks):
     pontos_de_interesse = {
@@ -60,7 +71,8 @@ def inference(foto_filename):
     return bbox, landmark
 
 def inference_yolo(frame):
-    bbox, label, conf = cv.detect_common_objects(frame, confidence=0.25, model='yolov4')
+    
+    bbox, label, conf = yolo.detect_objects(frame)
     cropped = list()
 
     for label, c in zip(label, conf):
@@ -82,14 +94,9 @@ def inference_yolo(frame):
     return None
 
 def inferencia_cnn(cropped):
-    image_data = cat_recognition.preprocess_image(cropped['cropped'])
-    class_name, confidence_score = cat_recognition.predict(image_data)
+    class_name, confidence_score = rekognition.inference(cropped['cropped'])
     return {"class_name": class_name, "confidence": f"{confidence_score:.6f}"}
                         
-
-# Diretório para armazenar as imagens dos gatos
-image_directory = 'imagens_gatos'
-
 
 def salvar_imagem_base64(foto_base64, nome):
     foto_bytes = base64.b64decode(foto_base64)

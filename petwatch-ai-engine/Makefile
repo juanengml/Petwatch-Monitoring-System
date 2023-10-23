@@ -1,8 +1,9 @@
 # Nome da imagem Docker
-DOCKER_IMAGE_NAME = api-petwatch-api-backend
+DOCKER_IMAGE_NAME = api-petwatch-ai
 
 # Porta em que a aplicação Flask irá rodar no host
-HOST_PORT = 5001
+HOST_PORT = 5000
+
 ENV = /home/juannascimento/.env
 
 # Comando para construir a imagem Docker

@@ -8,6 +8,8 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN apt update
+COPY .streamlit/config.toml .streamlit/config.toml
+
 RUN apt-get install libgl1-mesa-glx -y
 # Instale as dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt

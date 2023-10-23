@@ -3,6 +3,7 @@ FROM python:3.8
 
 # Define o diretório de trabalho no container
 WORKDIR /app
+
 RUN apt update
 RUN apt-get install libgl1-mesa-glx -y
 
@@ -15,7 +16,7 @@ COPY . /app
 RUN pip install -r requirements.txt
 
 # Expõe a porta em que a sua aplicação Flask irá rodar (ajuste conforme necessário)
-EXPOSE 5000
+EXPOSE 5001
 
 # Comando para executar a sua aplicação Flask
 CMD ["python", "api.py"]

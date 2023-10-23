@@ -1,8 +1,26 @@
 import dataset
+from sqlalchemy import create_engine
+import os
+
 
 class DataBase(object):
-    def __init__(self, uri='sqlite:///mydatabase.db'):
-        self.uri = uri
+    def __init__(self):
+        self.host = os.environ.get("PETWATCH_DB_HOST")
+        self.user = os.environ.get("PETWATCH_DB_USER")
+        self.password = os.environ.get("PETWATCH_DB_PASSWORD")
+        self.uri = f"mysql://{self.user}:{self.password}@{self.host}"
+        self.db = dataset.connect(self.uri)
+
+        # Verificar se o banco de dados "petwatch" existe
+        engine = create_engine(self.uri)
+        with engine.connect() as connection:
+            result = connection.execute("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'petwatch'")
+            if not result.fetchone():
+                # O banco de dados "petwatch" não existe, então criá-lo
+                connection.execute("CREATE DATABASE petwatch")
+
+        # Conectar novamente ao banco de dados "petwatch"
+        self.uri += "/petwatch"
         self.db = dataset.connect(self.uri)
 
     def search(self, query):

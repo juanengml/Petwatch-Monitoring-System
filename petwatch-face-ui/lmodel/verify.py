@@ -55,8 +55,8 @@ class Verify(object):
 
                                 col2.success("Inferencia feita com sucesso !")
                         
-                            col2.error("Falha ao reconhecer gato na image")
-                            col2.image("src/sam.png")
+                            #col2.error("Falha ao reconhecer gato na image")
+                            #col2.image("src/sam.png")
 
                 except AttributeError:  
                     st.warning("Faça upload de uma imagem para verificação verificação")

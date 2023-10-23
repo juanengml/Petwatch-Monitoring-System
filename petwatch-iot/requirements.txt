@@ -1,0 +1,4 @@
+requests
+opencv-python-headless
+bounding-box
+flask-opencv-streamer

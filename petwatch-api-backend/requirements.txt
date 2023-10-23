@@ -7,3 +7,4 @@ boto3
 dataset
 Pillow
 mysqlclient
+sqlalchemy

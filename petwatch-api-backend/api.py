@@ -22,11 +22,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 gatos = []
 
 s3_storage = Storage(uri='http://192.168.0.43:9000', access_key='minio_access_key', secret_key='minio_secret_key')
-db = DataBase()
+
 
 # Rota para listar todos os gatos
 @app.route('/gatos', methods=['GET'])
 def listar_gatos():
+    db = DataBase()
     response = db.search("SELECT * FROM table_cats_information;")
     return jsonify(response)
 
@@ -34,6 +35,7 @@ def listar_gatos():
 # Rota para cadastrar um gato
 @app.route('/gatos', methods=['POST'])
 def cadastrar_gato():
+
     data = request.form
     nome = data['nome']
     data_nascimento = data['data_nascimento']
@@ -77,7 +79,7 @@ def cadastrar_gato():
 
 
     # Agora você pode realizar as operações necessárias com os dados do gato e o caminho do vídeo
-    db = DataBase()
+
     now = pendulum.now("America/Sao_Paulo")
 
     gato = {
@@ -96,6 +98,7 @@ def cadastrar_gato():
 
 @app.route('/gatos/<string:nome>', methods=['PUT'])
 def atualizar_gato(nome):
+    db = DataBase()
     data = request.form  # Agora estamos recebendo dados do formulário
     novo_nome = data.get('nome')
     nova_data_nascimento = data.get('data_nascimento')
@@ -135,10 +138,14 @@ def atualizar_gato(nome):
 
 @app.route('/gatos/<string:nome>', methods=['DELETE'])
 def deletar(nome):
+    db = DataBase()
     result = db.search(f"SELECT * FROM table_cats_information WHERE nome='{nome}'")
     if len(result) > 0:
         bucket = result[0]['bucket']
-        s3_storage.delete_bucket(bucket)
+        try:
+            s3_storage.delete_bucket(bucket)
+        except:
+             print("Não encontrado no bucket")
         db.delete('table_cats_information', nome)
         return jsonify({"message": "Gato deletado"}), 200
 

@@ -1,4 +1,6 @@
+boto3
 opencv-python
+opencv-contrib-python
 tensorflow
 cvlib
 flask
@@ -6,3 +8,4 @@ pendulum
 dataset
 shortuuid
 mysqlclient
+sqlalchemy

@@ -1,9 +1,8 @@
 # Nome da imagem Docker
-DOCKER_IMAGE_NAME = api-petwatch-api-backend
+DOCKER_IMAGE_NAME = petwatch-ui
 
 # Porta em que a aplicação Flask irá rodar no host
-HOST_PORT = 5001
-ENV = /home/juannascimento/.env
+HOST_PORT = 8501
 
 # Comando para construir a imagem Docker
 build:
@@ -11,7 +10,7 @@ build:
 
 # Comando para executar o contêiner Docker
 run:
-	docker run --env-file $(ENV) -p $(HOST_PORT):$(HOST_PORT)  $(DOCKER_IMAGE_NAME)
+	docker run -p $(HOST_PORT):$(HOST_PORT)  $(DOCKER_IMAGE_NAME)
 
 # Comando para purgar (remover) o contêiner Docker
 purge:

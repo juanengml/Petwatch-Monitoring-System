@@ -1,151 +1,39 @@
 import cv2
-
-from components.aws_cat_recognition import Rekognition
-try:
-  from components.cat_frontal_face_detection import detect_cat_face
-except Exception as error:
-  print("[IGNORED] - ModuleNotFoundError: No module named 'dlib'")
-
 import base64
-import os
 import numpy as np
+from ultralytics import YOLO as YOLOV8
 
-from cvlib.object_detection import YOLO
+yolo_model = "lmodel/best.pt"
 
+model = YOLOV8(yolo_model)
 
-model_path = "lmodel/keras_model.h5"
-labels_path = "lmodel/labels.txt"
-
-weights = "lmodel/yolov4.weights"
-config = "lmodel/yolov4.cfg"
-labels = "lmodel/yolov3_classes.txt"
-# Diretório para armazenar as imagens dos gatos
-image_directory = 'imagens_gatos'
-
-#cat_recognition = CatRecognitionModel(model_path, labels_path)
-yolo = YOLO(weights, config, labels)
-rekognition = Rekognition()
-
-
-def montar_dict_landmarks(landmarks):
-    pontos_de_interesse = {
-        "Left Eye": landmarks[0],
-        "Right Eye": landmarks[1],
-        "Mouth": landmarks[2],
-        "Left Ear-1": landmarks[3],
-        "Left Ear-2": landmarks[4],
-        "Left Ear-3": landmarks[5],
-        "Right Ear-1": landmarks[6],
-        "Right Ear-2": landmarks[7],
-        "Right Ear-3": landmarks[8]
-    }
-    return pontos_de_interesse
-
-def converter_dados_em_listas(retangulo, landmarks):
-    # Converter o objeto de retângulo (bbox) em uma lista de coordenadas
-    bbox = list()
-    for ret in retangulo:
-        bbox.append({
-            "left":ret.left(), 
-            "top":ret.top(), 
-            "right":ret.right(), 
-            "bottom": ret.bottom()
-        })
-        
-
-    # Converter o array de landmarks em uma lista de listas de coordenadas
-    lands = list()
-    for landmark in landmarks:
-        lands.append(montar_dict_landmarks(landmark.tolist()))
-
-    return bbox, lands
-
-def inference(foto_filename):
-    cat_img = cv2.imread(foto_filename)
-    cat_img = cv2.resize(cat_img, (720,480), interpolation = cv2.INTER_AREA)
-
-    bbox, landmark = detect_cat_face(cat_img) 
-    bbox, landmark = converter_dados_em_listas(bbox, landmark)
-
-    print(bbox, landmark)
-    return bbox, landmark
+result_inference = {
+                "cropped": None,
+                "label": "",
+                "bbox": {"x": "", "y": "", "x2": "", "y2": ""}
+            }
 
 def inference_yolo(frame):
+    results = model.predict(frame)
     
-    bbox, label, conf = yolo.detect_objects(frame)
-    cropped = list()
-
-    for label, c in zip(label, conf):
-        if label == 'cat':
-            idx = label.index(label)
-            x, y, x2, y2 = map(int, bbox[idx])
-            result = {
-                "cropped": None, 
-                "label":label.replace("cat", "gato"), 
-                "bbox": {"x":x,"y":y, "x2":x2, "y2": y2}
-            }
-            if x >= 0 and y >= 0 and x2 >= 0 and y2 >= 0:
-                cropped = frame[y:y2, x:x2]
-                if cropped.any():
-                    result['cropped'] = cropped
-                    return result
-                else:
-                    return result
-    return None
-
-def inferencia_cnn(cropped):
-    class_name, confidence_score = rekognition.inference(cropped['cropped'])
-    return {"class_name": class_name, "confidence": f"{confidence_score:.6f}"}
-                        
-
-def salvar_imagem_base64(foto_base64, nome):
-    foto_bytes = base64.b64decode(foto_base64)
-    foto_filename = os.path.join(image_directory, f'{nome}.jpg')
-
-    with open(foto_filename, 'wb') as foto_file:
-        foto_file.write(foto_bytes)
-
-    return foto_filename
-
-
-def converter_landmark_para_lista(landmark):
-    # Extrair as coordenadas dos dicionários e convertê-las em listas
-    landmark_lista = list()
-    for coord in landmark:
-        landmark_lista = [[mark[0], mark[1]] for mark in coord.values()]
-
-    return landmark_lista
-
-
-def check_land(landmark,flag):
-    print(f"{flag}: ",landmark, type(landmark), "convert-> ", converter_landmark_para_lista(landmark))
-
-
-def landmarks_similares(landmark1, landmark2, limite=10.0):
-    """
-    Função para verificar se dois conjuntos de landmarks são similares.
-    
-    Args:
-        landmark1 (list): Lista de landmarks do primeiro conjunto.
-        landmark2 (list): Lista de landmarks do segundo conjunto.
-        limite (float): Limite para considerar os landmarks como similares.
+    for result in results:
+        box = result.boxes  # Boxes object for bbox outputs
+        cords = box.xyxy[0].tolist()
+        cords = [round(x) for x in cords]
+        class_id = result.names[box.cls[0].item()]
+        conf = round(box.conf[0].item(), 2)
+        result_inference['label'] = class_id
+        result_inference['bbox'] = cords
+        result_inference['confidence'] = conf
+        print("Object type:", class_id)
+        print("Coordinates:", cords)
+        print("Probability:", conf)
         
-    Returns:
-        bool: True se os landmarks são similares, False caso contrário.
-    """
-    # Certifique-se de que ambos os conjuntos de landmarks têm o mesmo número de pontos
-    if len(landmark1) != len(landmark2):
-        return False
+    return result_inference
 
-    check_land(landmark1, "landmark1")
-    #check_land(landmark2, "landmark2")
 
-    landmark1 = converter_landmark_para_lista(landmark1)
-    landmark2 = converter_landmark_para_lista(landmark2)
-
-    # Calcular a distância Euclidiana média entre os landmarks
-    distancias = [np.linalg.norm(np.array(p1) - np.array(p2)) for p1, p2 in zip(landmark1, landmark2)]
-    distancia_media = np.mean(distancias)
-
-    # Verificar se a distância média está abaixo do limite
-    return distancia_media < limite
+def decode_base64_to_byarray(foto_base64):
+    foto_bytes = base64.b64decode(foto_base64)
+    image_array = np.frombuffer(foto_bytes, dtype=np.uint8)
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    return image

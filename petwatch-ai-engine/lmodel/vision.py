@@ -14,6 +14,8 @@ result_inference = {
             }
 
 def inference_yolo(frame):
+    results_list = []
+
     results = model.predict(frame)
     
     for result in results:
@@ -22,14 +24,22 @@ def inference_yolo(frame):
         cords = [round(x) for x in cords]
         class_id = result.names[box.cls[0].item()]
         conf = round(box.conf[0].item(), 2)
-        result_inference['label'] = class_id
-        result_inference['bbox'] = cords
-        result_inference['confidence'] = conf
+
+        x, y, x2, y2 = cords
+
+        result_dict = {
+            'label': class_id,
+            'bbox': {'x': x, 'y': y, 'x2': x2, 'y2': y2},
+            'confidence': conf
+        }
+
+        results_list.append(result_dict)
+
         print("Object type:", class_id)
         print("Coordinates:", cords)
         print("Probability:", conf)
-        
-    return result_inference
+    print(results_list)    
+    return results_list[0]
 
 
 def decode_base64_to_byarray(foto_base64):

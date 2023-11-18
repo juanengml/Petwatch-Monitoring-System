@@ -11,7 +11,11 @@ build:
 
 # Comando para executar o contêiner Docker
 run:
-	docker run --env-file $(ENV) -p $(HOST_PORT):$(HOST_PORT)  $(DOCKER_IMAGE_NAME)
+	docker run \
+		-e PETWATCH_DB_HOST=$$PETWATCH_DB_HOST \
+		-e PETWATCH_DB_USER=$$PETWATCH_DB_USER \
+		-e PETWATCH_DB_PASSWORD=$$PETWATCH_DB_PASSWORD \
+		-p $(HOST_PORT):$(HOST_PORT) $(DOCKER_IMAGE_NAME)
 
 # Comando para purgar (remover) o contêiner Docker
 purge:

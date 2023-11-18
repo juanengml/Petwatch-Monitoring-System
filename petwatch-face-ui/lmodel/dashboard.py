@@ -21,9 +21,11 @@ class Dash(object):
         with col1:
             st.subheader('Informações do Serviço')
             url = 'http://192.168.0.43:5001/gatos'
-        
+
             response_api = get(url).json()
+
             df_api = pd.DataFrame.from_dict(response_api)
+
             df_api['data_nascimento'] = pd.to_datetime(df_api['data_nascimento'], format='%d/%m/%Y')
             df_api['ano_nascimento'] = df_api['data_nascimento'].dt.year
             
@@ -38,7 +40,7 @@ class Dash(object):
                 
                 st.metric('Idade Média dos Gatos', value=f'{int(idade_media)} anos')
             with grid1:  
-                st.metric(label="Modelo Produtivo", value=response['model'][0])
+                st.metric(label="Modelo Produtivo", value="best.pt")
                 df_api['ano_nascimento'] = df_api['data_nascimento'].dt.year
                 # Converta a coluna 'create_at' para o formato datetime
                 df_api['create_at'] = pd.to_datetime(df_api['create_at'])

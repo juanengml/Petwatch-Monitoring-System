@@ -42,7 +42,8 @@ Para solicitar uma Licença Corporativa, por favor, preencha o formulário em Ul
 ![](imagens_gatos/trainModel.png)
 
 ### 4. Tests
-
+![](imagens_gatos/check.png)
 ### 5. Deploy
 
+![](imagens_gatos/deploy.png)
 

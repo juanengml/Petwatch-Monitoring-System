@@ -16,8 +16,8 @@ def main():
     menu = st.sidebar.selectbox(
         'Menu:',
         (
-            "Dashboard",
             "Verificar",
+            "Dashboard",
             "Cat Collections",
         )
     )

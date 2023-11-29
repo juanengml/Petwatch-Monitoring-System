@@ -3,20 +3,29 @@ import base64
 import numpy as np
 from ultralytics import YOLO as YOLOV8
 
-yolo_model = "lmodel/best.pt"
-
-model = YOLOV8(yolo_model)
-
 result_inference = {
                 "cropped": None,
                 "label": "",
                 "bbox": {"x": "", "y": "", "x2": "", "y2": ""}
             }
 
+# Load a pretrained YOLOv8n model
+class LoadModel(object):
+  def __init__(self, model_path): # '/content/runs/detect/train/weights/best.pt'
+      self.model = YOLOV8(model_path)
+
+  def inference(self, image): #
+      return self.model.predict(image)
+
+  def get_model(self):
+      return self.model
+
+model_inference = LoadModel('lmodel/best.pt')
+
 def inference_yolo(frame):
     results_list = []
 
-    results = model.predict(frame)
+    results = model_inference.inference(frame)
     
     for result in results:
         box = result.boxes  # Boxes object for bbox outputs
@@ -35,10 +44,6 @@ def inference_yolo(frame):
 
         results_list.append(result_dict)
 
-        print("Object type:", class_id)
-        print("Coordinates:", cords)
-        print("Probability:", conf)
-    print(results_list)    
     return results_list[0]
 
 
